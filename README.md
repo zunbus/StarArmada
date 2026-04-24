@@ -1,16 +1,16 @@
-\# Star Armada
+# Star Armada
 
 
 
-\*\*Star Armada\*\* is a Unreal Engine 5 project centered on tactical space freighter combat. The game places players in command of heavily modified cargo vessels, where logistics, positioning, and ship customization are as critical as direct firepower.
+**Star Armada** is a Unreal Engine 5 project centered on tactical space freighter combat. The game places players in command of heavily modified cargo vessels, where logistics, positioning, and ship customization are as critical as direct firepower.
 
 
 
-\---
+---
 
 
 
-\## Overview
+## Overview
 
 
 
@@ -18,13 +18,13 @@ In Star Armada, players engage in strategic battles using industrial-scale freig
 
 
 
-\- Large-scale ship handling
+- Large-scale ship handling
 
-\- Resource and cargo management
+- Resource and cargo management
 
-\- Tactical positioning and fleet coordination
+- Tactical positioning and fleet coordination
 
-\- Customizable modular systems
+- Customizable modular systems
 
 
 
@@ -32,67 +32,67 @@ The gameplay blends simulation and strategy, encouraging players to think like b
 
 
 
-\---
+---
 
 
 
-\## Key Features
+## Key Features
 
 
 
-\- \*\*Freighter-Based Combat\*\*  
+- **Freighter-Based Combat**  
 
 &#x20; Command massive cargo vessels equipped with improvised weapons and defensive systems.
 
 
 
-\- \*\*Modular Ship Systems\*\*  
+- **Modular Ship Systems**  
 
 &#x20; Customize ships with interchangeable modules such as weapons, shields, engines, and cargo units.
 
 
 
-\- \*\*Tactical Gameplay\*\*  
+- **Tactical Gameplay**  
 
 &#x20; Battles reward planning, positioning, and resource management over reflex-based mechanics.
 
 
 
-\- \*\*Dynamic Environments\*\*  
+- **Dynamic Environments**  
 
 &#x20; Engage in combat across asteroid fields, trade routes, and contested space sectors.
 
 
 
-\- \*\*Scalable Architecture\*\*  
+- **Scalable Architecture**  
 
 &#x20; Designed to support both single-player scenarios and potential multiplayer expansion.
 
 
 
-\---
+---
 
 
 
-\## Technology
+## Technology
 
 
 
-\- \*\*Engine:\*\* Unreal Engine 5  
+- **Engine:** Unreal Engine 5  
 
-\- \*\*Language:\*\* C++ and Blueprints  
+- **Language:** C++ and Blueprints  
 
-\- \*\*Rendering:\*\* Nanite and Lumen (where applicable)  
+- **Rendering:** Nanite and Lumen (where applicable)  
 
-\- \*\*Platform:\*\* PC (target platform, subject to change)
-
-
-
-\---
+- **Platform:** PC (target platform, subject to change)
 
 
 
-\## Project Structure
+---
+
+
+
+## Project Structure
 
 /Content - Game assets (models, materials, audio, UI)
 
@@ -108,29 +108,29 @@ The gameplay blends simulation and strategy, encouraging players to think like b
 
 
 
-\---
+---
 
 
 
-\## Getting Started
+## Getting Started
 
 
 
-\### Prerequisites
+### Prerequisites
 
 
 
-\- Unreal Engine 5.x installed
+- Unreal Engine 5.x installed
 
-\- Compatible GPU supporting UE5 features (recommended)
-
-
-
-\### Setup
+- Compatible GPU supporting UE5 features (recommended)
 
 
 
-1\. Clone the repository:
+### Setup
+
+
+
+1. Clone the repository:
 
 &#x20;  ```bash
 
@@ -141,11 +141,11 @@ The gameplay blends simulation and strategy, encouraging players to think like b
 
 
 
-3\. Generate project files (if using C++).
+3. Generate project files (if using C++).
 
 
 
-4\. Build and run the project from within the editor.
+4. Build and run the project from within the editor.
 
 # Development Guidelines
 
@@ -164,7 +164,7 @@ This project is currently restricted. Contribution is limited to authorized coll
 
 
 
-\# License
+# License
 
 
 
@@ -172,7 +172,7 @@ This project is governed by a custom proprietary license. See the LICENSE file f
 
 
 
-\# Contact
+# Contact
 
 
 
@@ -180,7 +180,7 @@ For inquiries regarding access, collaboration, or licensing, contact the project
 
 
 
-\# Disclaimer
+# Disclaimer
 
 
 
