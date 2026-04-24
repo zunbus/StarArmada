@@ -20,8 +20,6 @@ In Star Armada, players engage in strategic battles using industrial-scale freig
 
 - Large-scale ship handling
 
-- Resource and cargo management
-
 - Tactical positioning and fleet coordination
 
 - Customizable modular systems
@@ -55,13 +53,6 @@ The gameplay blends simulation and strategy, encouraging players to think like b
 - **Tactical Gameplay**  
 
 &#x20; Battles reward planning, positioning, and resource management over reflex-based mechanics.
-
-
-
-- **Dynamic Environments**  
-
-&#x20; Engage in combat across asteroid fields, trade routes, and contested space sectors.
-
 
 
 - **Scalable Architecture**  
