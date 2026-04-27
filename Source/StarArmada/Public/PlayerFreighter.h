@@ -10,6 +10,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class USplineComponent;
 class USplineMeshComponent;
+class AFreighterWeapons;
 
 /**
  * 
@@ -58,8 +59,13 @@ class STARARMADA_API APlayerFreighter : public AFreighter
 		void SetWeapons1(const FInputActionValue &Value);
 		void SetWeapons2(const FInputActionValue &Value);
 		void SetWeapons3(const FInputActionValue &Value);
+		void SetupWeapon(AFreighterWeapons* Weapon, USkeletalMeshComponent* InHullMesh, FName Socket);
 		bool FreeCam = false;
 		int ActiveWeapons = 0;
+
+		TArray<AFreighterWeapons*> WeaponsLeft;
+        TArray<AFreighterWeapons*> WeaponsRight;
+		AFreighterWeapons* WeaponForward;
 
 	public:
 		virtual void Tick(float DeltaTime) override;

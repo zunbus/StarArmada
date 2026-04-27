@@ -12,6 +12,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
+#include "FreighterWeapons.h"
 
 
 APlayerFreighter::APlayerFreighter()
@@ -57,6 +58,15 @@ APlayerFreighter::APlayerFreighter()
 	Camera ->SetupAttachment(CameraBoom);
     
 }
+void APlayerFreighter::SetupWeapon(AFreighterWeapons* Weapon, USkeletalMeshComponent* InHullMesh, FName Socket){
+    Weapon->AttachToComponent(
+        HullMesh,
+        FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+        Socket
+    );
+    Weapon->SetActorScale3D(FVector(0.05f,0.05f,0.05f));
+    Weapon->AddActorLocalRotation(FRotator(0.f,180.f,180.f));
+}
 void APlayerFreighter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -99,6 +109,32 @@ void APlayerFreighter::BeginPlay()
         PathMesh->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
         PathMesh->SetRelativeRotation(FRotator(-90.f, 90.f, 180.f));
         PathMesh->SetRelativeScale3D(FVector(0.015, 0.008, 0.008));
+
+        WeaponForward = GetWorld()->SpawnActor<AFreighterWeapons>(
+            FreighterMeshSet->WeaponsPortside,
+            FTransform::Identity
+        );
+        
+
+        SetupWeapon(WeaponForward, HullMesh, "F-LargHardpoint");
+
+        for (int i = 1; i<4; i++){
+            AFreighterWeapons* Temp = GetWorld()->SpawnActor<AFreighterWeapons>(
+                FreighterMeshSet->WeaponsPortside,
+                FTransform::Identity
+            );
+            SetupWeapon(Temp, HullMesh, FName(*FString::Printf(TEXT("L-LargeHardpoint%d"), i)));
+            WeaponsLeft.Add(Temp);
+        }
+        for (int i = 1; i<4; i++){
+            AFreighterWeapons* Temp = GetWorld()->SpawnActor<AFreighterWeapons>(
+                FreighterMeshSet->WeaponsStarboard,
+                FTransform::Identity
+            );
+            SetupWeapon(Temp, HullMesh, FName(*FString::Printf(TEXT("R-LargeHardpoint%d"), i)));
+            WeaponsRight.Add(Temp);
+        }
+        
 	}
 }
 void APlayerFreighter::Tick(float DeltaTime)
@@ -163,6 +199,22 @@ void APlayerFreighter::Turn(const FInputActionValue &Value){
             FMath::Clamp(Camera->GetRelativeRotation().Pitch, 0.f, 20.f),
             FMath::Clamp(Camera->GetRelativeRotation().Yaw, -45.f, 45.f),
             0.f));
+        switch(ActiveWeapons){
+            case 1:
+                    WeaponForward->Aim = FVector2D(Camera->GetRelativeRotation().Pitch,Camera->GetRelativeRotation().Yaw);
+                break;
+            case 2:
+                for (int i = 0; i<3; i++){
+                    WeaponsLeft[i]->Aim = FVector2D(Camera->GetRelativeRotation().Pitch,Camera->GetRelativeRotation().Yaw);
+                }
+                break;
+            case 3:
+                for (int i = 0; i<3; i++){
+                    WeaponsRight[i]->Aim = FVector2D(Camera->GetRelativeRotation().Pitch,Camera->GetRelativeRotation().Yaw);
+                }
+                break;
+        }
+        
     }
     else {
         Camera->AddLocalRotation(FRotator(InputValue.Y, InputValue.X, 0.f));
