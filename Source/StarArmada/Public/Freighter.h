@@ -21,7 +21,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UFreighterMeshSet* FreighterMeshSet;
 	USkeletalMeshComponent* HullMesh;
-
+	
 	
 
 	virtual void BeginPlay() override;

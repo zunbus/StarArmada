@@ -14,6 +14,7 @@ AFreighter::AFreighter()
 	
 	
 	
+	
 
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,6 +27,9 @@ void AFreighter::BeginPlay()
 	Super::BeginPlay();
 	if (FreighterMeshSet){
 		HullMesh->SetSkeletalMesh(FreighterMeshSet->Hull);
+		HullMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		HullMesh->SetCollisionObjectType(ECC_WorldDynamic);
+		HullMesh->SetCollisionResponseToAllChannels(ECR_Block);
 	}
 	
 }

@@ -40,6 +40,9 @@ class STARARMADA_API APlayerFreighter : public AFreighter
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 		class UInputAction* WeaponsFAction;
 
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+		class UInputAction* FireAction;
+
 		virtual void BeginPlay() override;
 		virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
@@ -60,6 +63,8 @@ class STARARMADA_API APlayerFreighter : public AFreighter
 		void SetWeapons2(const FInputActionValue &Value);
 		void SetWeapons3(const FInputActionValue &Value);
 		void SetupWeapon(AFreighterWeapons* Weapon, USkeletalMeshComponent* InHullMesh, FName Socket);
+		void FireWeapons(const FInputActionValue &Value);
+
 		bool FreeCam = false;
 		int ActiveWeapons = 0;
 

@@ -167,6 +167,7 @@ void APlayerFreighter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
         EnhancedInputComponent->BindAction(WeaponsLAction, ETriggerEvent::Triggered, this, &APlayerFreighter::SetWeapons3);
         EnhancedInputComponent->BindAction(WeaponsRAction, ETriggerEvent::Triggered, this, &APlayerFreighter::SetWeapons2);
         EnhancedInputComponent->BindAction(WeaponsFAction, ETriggerEvent::Triggered, this, &APlayerFreighter::SetWeapons1);
+        EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerFreighter::FireWeapons);
     }
     
 }
@@ -228,9 +229,21 @@ void APlayerFreighter::SetWeapons1(const FInputActionValue &Value){
         ActiveWeapons=1;
         CameraBoom->SetRelativeRotation(FRotator(70.f,0.f,0.f));
         CameraBoom->SetRelativeLocation(FVector(0.f,0.f,0.f));
+        WeaponForward->Active=true;
+        for (int i = 0; i<3; i++){
+            WeaponsLeft[i]->Active = false;
+            WeaponsRight[i]->Active = false;
+        }
     }
     else {
         Camera->SetRelativeRotation(FRotator(0.f,0.f,0.f));
+
+        WeaponForward->Active=false;
+        for (int i = 0; i<3; i++){
+            WeaponsLeft[i]->Active = false;
+            WeaponsRight[i]->Active = false;
+        }
+
         ActiveWeapons=0;
     }
 }
@@ -240,12 +253,24 @@ void APlayerFreighter::SetWeapons2(const FInputActionValue &Value){
         CameraBoom->SetRelativeRotation(FRotator(0.f,90.f,90.f));
         CameraBoom->SetRelativeLocation(FVector(0.f,0.f,5.f));
 
+        WeaponForward->Active=false;
+        for (int i = 0; i<3; i++){
+            WeaponsLeft[i]->Active = true;
+            WeaponsRight[i]->Active = false;
+        }
+
         ActiveWeapons=2;
     }
     else {
         CameraBoom->SetRelativeRotation(FRotator(70.f,0.f,0.f));
         CameraBoom->SetRelativeLocation(FVector(0.f,0.f,0.f));
         Camera->SetRelativeRotation(FRotator(0.f,0.f,0.f));
+
+        WeaponForward->Active=false;
+        for (int i = 0; i<3; i++){
+            WeaponsLeft[i]->Active = false;
+            WeaponsRight[i]->Active = false;
+        }
         
         ActiveWeapons=0;
     }
@@ -256,13 +281,45 @@ void APlayerFreighter::SetWeapons3(const FInputActionValue &Value){
         CameraBoom->SetRelativeRotation(FRotator(0.f,-90.f,-90.f));
         CameraBoom->SetRelativeLocation(FVector(0.f,0.f,5.f));
 
+        WeaponForward->Active=false;
+        for (int i = 0; i<3; i++){
+            WeaponsLeft[i]->Active = false;
+            WeaponsRight[i]->Active = true;
+        }
+
         ActiveWeapons=3;
     }
     else {
         CameraBoom->SetRelativeRotation(FRotator(70.f,0.f,0.f));
         CameraBoom->SetRelativeLocation(FVector(0.f,0.f,0.f));
         Camera->SetRelativeRotation(FRotator(0.f,0.f,0.f));
+
+        WeaponForward->Active=false;
+        for (int i = 0; i<3; i++){
+            WeaponsLeft[i]->Active = false;
+            WeaponsRight[i]->Active = false;
+        }
         
         ActiveWeapons=0;
+    }
+}
+
+void APlayerFreighter::FireWeapons(const FInputActionValue &Value){
+    switch (ActiveWeapons){
+        case 0:
+            break;
+        case 1:
+            WeaponForward->Fire();
+            break;
+        case 2:
+            for (int i = 0; i<3; i++){
+                WeaponsLeft[i]->Fire();
+            }
+            break;
+        case 3:
+            for (int i = 0; i<3; i++){
+                WeaponsRight[i]->Fire();
+            }
+            break;
     }
 }
