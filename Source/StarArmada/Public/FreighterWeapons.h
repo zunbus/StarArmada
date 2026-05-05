@@ -11,6 +11,7 @@ class UStaticMeshComponent;
 class AFreighter;
 class AF2FCannonBullet;
 class UCameraShakeBase;
+class USoundBase;
 
 UCLASS()
 class STARARMADA_API AFreighterWeapons : public AActor
@@ -31,14 +32,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* AimMesh;
 
-	UPROPERTY(EditAnywhere)
-	AFreighter* OwningFreighter;
+	
 
 	UPROPERTY(EditDefaultsOnly)
 	class UNiagaraSystem* FireParticles;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AF2FCannonBullet> Bullet;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* FireSound;
 
 	UPROPERTY(EditDefaultsOnly)
 	float CoolDown = 0.f;
@@ -65,5 +68,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Fire();
+	AFreighter* OwningFreighter;
 
 };

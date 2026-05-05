@@ -8,6 +8,9 @@
 #include "F2FCannonBullet.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
+#include "F2FCannonBullet.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AFreighterWeapons::AFreighterWeapons()
@@ -45,15 +48,34 @@ void AFreighterWeapons::BeginPlay()
 void AFreighterWeapons::Fire(){
 	if (!locked){
 		FActorSpawnParameters Params;
-		Params.SpawnCollisionHandlingOverride =
-			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		GetWorld()->SpawnActor<AF2FCannonBullet>(
+		AF2FCannonBullet* BulletActor = GetWorld()->SpawnActor<AF2FCannonBullet>(
 			Bullet,
-			AimMesh->GetComponentLocation(),
+			Mesh->GetSocketLocation("BarrelSpawn"),
 			Mesh->GetSocketRotation("BarrelSpawn"),
 			Params
 		);
+		if (OwningFreighter){
+			BulletActor->Outer=OwningFreighter;
+		}
+		
+
+
+		AActor* Parent = GetAttachParentActor();
+		FVector ParentVelocity = Parent ? Parent->GetVelocity() : FVector::ZeroVector;
+
+		BulletActor->ProjectileMovement->Velocity += ParentVelocity;
+
+		
+		if (FireSound){
+			UGameplayStatics::PlaySoundAtLocation(
+				this,
+				FireSound,
+				Mesh->GetSocketLocation("BarrelSpawn")
+			);
+		}
+		
 
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FireParticles, Mesh->GetSocketLocation("BarrelSpawn"),Mesh->GetSocketRotation("BarrelSpawn"));
 

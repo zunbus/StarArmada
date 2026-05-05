@@ -58,15 +58,7 @@ APlayerFreighter::APlayerFreighter()
 	Camera ->SetupAttachment(CameraBoom);
     
 }
-void APlayerFreighter::SetupWeapon(AFreighterWeapons* Weapon, USkeletalMeshComponent* InHullMesh, FName Socket){
-    Weapon->AttachToComponent(
-        HullMesh,
-        FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-        Socket
-    );
-    Weapon->SetActorScale3D(FVector(0.05f,0.05f,0.05f));
-    Weapon->AddActorLocalRotation(FRotator(0.f,180.f,180.f));
-}
+
 void APlayerFreighter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -110,30 +102,7 @@ void APlayerFreighter::BeginPlay()
         PathMesh->SetRelativeRotation(FRotator(-90.f, 90.f, 180.f));
         PathMesh->SetRelativeScale3D(FVector(0.015, 0.008, 0.008));
 
-        WeaponForward = GetWorld()->SpawnActor<AFreighterWeapons>(
-            FreighterMeshSet->WeaponsPortside,
-            FTransform::Identity
-        );
         
-
-        SetupWeapon(WeaponForward, HullMesh, "F-LargHardpoint");
-
-        for (int i = 1; i<4; i++){
-            AFreighterWeapons* Temp = GetWorld()->SpawnActor<AFreighterWeapons>(
-                FreighterMeshSet->WeaponsPortside,
-                FTransform::Identity
-            );
-            SetupWeapon(Temp, HullMesh, FName(*FString::Printf(TEXT("L-LargeHardpoint%d"), i)));
-            WeaponsLeft.Add(Temp);
-        }
-        for (int i = 1; i<4; i++){
-            AFreighterWeapons* Temp = GetWorld()->SpawnActor<AFreighterWeapons>(
-                FreighterMeshSet->WeaponsStarboard,
-                FTransform::Identity
-            );
-            SetupWeapon(Temp, HullMesh, FName(*FString::Printf(TEXT("R-LargeHardpoint%d"), i)));
-            WeaponsRight.Add(Temp);
-        }
         
 	}
 }
@@ -148,7 +117,7 @@ void APlayerFreighter::Tick(float DeltaTime)
     );
     AddMovementInput(GetActorForwardVector(), CurrentThrottle/100.f);
     if (GetVelocity().Size() >= 10.f){
-        AddActorLocalRotation(FRotator(CurrentTurn.Y*-0.0001f, CurrentTurn.X*0.0001f, 0.0f));
+        AddActorLocalRotation(FRotator(CurrentTurn.Y*-0.0001f*(CurrentThrottle/100.f), CurrentTurn.X*0.0001f*(CurrentThrottle/100.f), 0.0f));
     }
 }
 
@@ -225,83 +194,93 @@ void APlayerFreighter::Turn(const FInputActionValue &Value){
 }
 
 void APlayerFreighter::SetWeapons1(const FInputActionValue &Value){
-    if (ActiveWeapons!=1){
-        ActiveWeapons=1;
-        CameraBoom->SetRelativeRotation(FRotator(70.f,0.f,0.f));
-        CameraBoom->SetRelativeLocation(FVector(0.f,0.f,0.f));
-        WeaponForward->Active=true;
-        for (int i = 0; i<3; i++){
-            WeaponsLeft[i]->Active = false;
-            WeaponsRight[i]->Active = false;
+    if (WeaponForward){
+        if (ActiveWeapons!=1){
+            ActiveWeapons=1;
+            CameraBoom->SetRelativeRotation(FRotator(70.f,0.f,0.f));
+            CameraBoom->SetRelativeLocation(FVector(0.f,0.f,0.f));
+            WeaponForward->Active=true;
+            for (int i = 0; i<3; i++){
+                WeaponsLeft[i]->Active = false;
+                WeaponsRight[i]->Active = false;
+            }
+        }
+        else {
+            Camera->SetRelativeRotation(FRotator(0.f,0.f,0.f));
+
+            WeaponForward->Active=false;
+            for (int i = 0; i<3; i++){
+                WeaponsLeft[i]->Active = false;
+                WeaponsRight[i]->Active = false;
+            }
+
+            ActiveWeapons=0;
         }
     }
-    else {
-        Camera->SetRelativeRotation(FRotator(0.f,0.f,0.f));
-
-        WeaponForward->Active=false;
-        for (int i = 0; i<3; i++){
-            WeaponsLeft[i]->Active = false;
-            WeaponsRight[i]->Active = false;
-        }
-
-        ActiveWeapons=0;
-    }
+    
 }
 void APlayerFreighter::SetWeapons2(const FInputActionValue &Value){
 
-    if (ActiveWeapons!=2){
-        CameraBoom->SetRelativeRotation(FRotator(0.f,90.f,90.f));
-        CameraBoom->SetRelativeLocation(FVector(0.f,0.f,5.f));
+    if (!WeaponsLeft.IsEmpty()){
+        if (ActiveWeapons!=2){
+            CameraBoom->SetRelativeRotation(FRotator(0.f,90.f,90.f));
+            CameraBoom->SetRelativeLocation(FVector(0.f,0.f,5.f));
 
-        WeaponForward->Active=false;
-        for (int i = 0; i<3; i++){
-            WeaponsLeft[i]->Active = true;
-            WeaponsRight[i]->Active = false;
+            WeaponForward->Active=false;
+            for (int i = 0; i<3; i++){
+                WeaponsLeft[i]->Active = true;
+                WeaponsRight[i]->Active = false;
+            }
+
+            ActiveWeapons=2;
         }
+        else {
+            CameraBoom->SetRelativeRotation(FRotator(70.f,0.f,0.f));
+            CameraBoom->SetRelativeLocation(FVector(0.f,0.f,0.f));
+            Camera->SetRelativeRotation(FRotator(0.f,0.f,0.f));
 
-        ActiveWeapons=2;
-    }
-    else {
-        CameraBoom->SetRelativeRotation(FRotator(70.f,0.f,0.f));
-        CameraBoom->SetRelativeLocation(FVector(0.f,0.f,0.f));
-        Camera->SetRelativeRotation(FRotator(0.f,0.f,0.f));
-
-        WeaponForward->Active=false;
-        for (int i = 0; i<3; i++){
-            WeaponsLeft[i]->Active = false;
-            WeaponsRight[i]->Active = false;
+            WeaponForward->Active=false;
+            for (int i = 0; i<3; i++){
+                WeaponsLeft[i]->Active = false;
+                WeaponsRight[i]->Active = false;
+            }
+            
+            ActiveWeapons=0;
         }
-        
-        ActiveWeapons=0;
     }
+
+    
 }
 void APlayerFreighter::SetWeapons3(const FInputActionValue &Value){
 
-    if (ActiveWeapons!=3){
-        CameraBoom->SetRelativeRotation(FRotator(0.f,-90.f,-90.f));
-        CameraBoom->SetRelativeLocation(FVector(0.f,0.f,5.f));
+    if (!WeaponsRight.IsEmpty()){
+        if (ActiveWeapons!=3){
+            CameraBoom->SetRelativeRotation(FRotator(0.f,-90.f,-90.f));
+            CameraBoom->SetRelativeLocation(FVector(0.f,0.f,5.f));
 
-        WeaponForward->Active=false;
-        for (int i = 0; i<3; i++){
-            WeaponsLeft[i]->Active = false;
-            WeaponsRight[i]->Active = true;
+            WeaponForward->Active=false;
+            for (int i = 0; i<3; i++){
+                WeaponsLeft[i]->Active = false;
+                WeaponsRight[i]->Active = true;
+            }
+
+            ActiveWeapons=3;
         }
+        else {
+            CameraBoom->SetRelativeRotation(FRotator(70.f,0.f,0.f));
+            CameraBoom->SetRelativeLocation(FVector(0.f,0.f,0.f));
+            Camera->SetRelativeRotation(FRotator(0.f,0.f,0.f));
 
-        ActiveWeapons=3;
-    }
-    else {
-        CameraBoom->SetRelativeRotation(FRotator(70.f,0.f,0.f));
-        CameraBoom->SetRelativeLocation(FVector(0.f,0.f,0.f));
-        Camera->SetRelativeRotation(FRotator(0.f,0.f,0.f));
-
-        WeaponForward->Active=false;
-        for (int i = 0; i<3; i++){
-            WeaponsLeft[i]->Active = false;
-            WeaponsRight[i]->Active = false;
+            WeaponForward->Active=false;
+            for (int i = 0; i<3; i++){
+                WeaponsLeft[i]->Active = false;
+                WeaponsRight[i]->Active = false;
+            }
+            
+            ActiveWeapons=0;
         }
-        
-        ActiveWeapons=0;
     }
+    
 }
 
 void APlayerFreighter::FireWeapons(const FInputActionValue &Value){
@@ -309,17 +288,49 @@ void APlayerFreighter::FireWeapons(const FInputActionValue &Value){
         case 0:
             break;
         case 1:
-            WeaponForward->Fire();
+            if(WeaponForward){
+                WeaponForward->Fire();
+            }
             break;
         case 2:
-            for (int i = 0; i<3; i++){
-                WeaponsLeft[i]->Fire();
+            if(!WeaponsLeft.IsEmpty()){
+                for (int i = 0; i<3; i++){
+                    AFreighterWeapons* Weapon = WeaponsLeft[i];
+
+                    FTimerHandle TimerHandle;
+
+                    GetWorld()->GetTimerManager().SetTimer(
+                        TimerHandle,
+                        [Weapon]()
+                        {
+                            Weapon->Fire();
+                        },
+                        (.2f*i)+.1f,
+                        false
+                    );
+                }
             }
+            
             break;
         case 3:
-            for (int i = 0; i<3; i++){
-                WeaponsRight[i]->Fire();
+            if(!WeaponsRight.IsEmpty()){
+                for (int i = 0; i<3; i++){
+                    AFreighterWeapons* Weapon = WeaponsRight[i];
+
+                    FTimerHandle TimerHandle;
+
+                    GetWorld()->GetTimerManager().SetTimer(
+                        TimerHandle,
+                        [Weapon]()
+                        {
+                            Weapon->Fire();
+                        },
+                        (.2f*i)+.1f,
+                        false
+                    );
+                }
             }
+            
             break;
     }
 }

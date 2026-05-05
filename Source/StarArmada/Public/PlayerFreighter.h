@@ -21,26 +21,26 @@ class STARARMADA_API APlayerFreighter : public AFreighter
 	GENERATED_BODY()
 	
 	protected:
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Configuration|Input", meta=(AllowPrivateAccess = "true"))
 		class UInputMappingContext* DefaultMappingContext;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Configuration|Input", meta=(AllowPrivateAccess = "true"))
 		class UInputAction* ThrottleAction;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Configuration|Input", meta=(AllowPrivateAccess = "true"))
 		class UInputAction* TurnAction;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Configuration|Input", meta=(AllowPrivateAccess = "true"))
 		class UInputAction* ToggleFreecamAction;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Configuration|Input", meta=(AllowPrivateAccess = "true"))
 		class UInputAction* WeaponsLAction;
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Configuration|Input", meta=(AllowPrivateAccess = "true"))
 		class UInputAction* WeaponsRAction;
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Configuration|Input", meta=(AllowPrivateAccess = "true"))
 		class UInputAction* WeaponsFAction;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Configuration|Input", meta=(AllowPrivateAccess = "true"))
 		class UInputAction* FireAction;
 
 		virtual void BeginPlay() override;
@@ -62,15 +62,12 @@ class STARARMADA_API APlayerFreighter : public AFreighter
 		void SetWeapons1(const FInputActionValue &Value);
 		void SetWeapons2(const FInputActionValue &Value);
 		void SetWeapons3(const FInputActionValue &Value);
-		void SetupWeapon(AFreighterWeapons* Weapon, USkeletalMeshComponent* InHullMesh, FName Socket);
 		void FireWeapons(const FInputActionValue &Value);
 
 		bool FreeCam = false;
 		int ActiveWeapons = 0;
 
-		TArray<AFreighterWeapons*> WeaponsLeft;
-        TArray<AFreighterWeapons*> WeaponsRight;
-		AFreighterWeapons* WeaponForward;
+		
 
 	public:
 		virtual void Tick(float DeltaTime) override;

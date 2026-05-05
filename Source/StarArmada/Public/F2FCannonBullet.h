@@ -1,39 +1,57 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// © 2026 Hubert Filas. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "F2FCannonBullet.generated.h"
+
 class UStaticMeshComponent;
 class UProjectileMovementComponent;
+class UNiagaraSystem;
+class UParticleSystem;
+class USphereComponent;
+class AFreighter;
+class USoundBase;
 
 UCLASS()
 class STARARMADA_API AF2FCannonBullet : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AF2FCannonBullet();
+    GENERATED_BODY()
+    
+public: 
+    AF2FCannonBullet();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
+
+    UPROPERTY(EditDefaultsOnly)
+    UStaticMeshComponent* BulletMesh;
 
 	UPROPERTY(EditDefaultsOnly)
-	UStaticMeshComponent* BulletMesh;
+    USphereComponent* Collision;
+
+    
+
+    UPROPERTY(EditDefaultsOnly)
+    UNiagaraSystem* ImpactParticles;
 
 	UPROPERTY(EditDefaultsOnly)
-	UProjectileMovementComponent* ProjectileMovement;
+	USoundBase* ImpactSound;
 
+    UFUNCTION()
+    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+                        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+                        bool bFromSweep, const FHitResult& SweepResult);
+
+    void Kill();
+
+public: 
+    virtual void Tick(float DeltaTime) override;
 	UPROPERTY(EditDefaultsOnly)
-	class UNiagaraSystem* ImpactParticles;
+    UProjectileMovementComponent* ProjectileMovement;
+	UPROPERTY(EditDefaultsOnly)
+	UParticleSystem* CascadeImpactParticles;
 
-	void Kill();
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	AFreighter* Outer;
 };

@@ -1,22 +1,35 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// © 2026 Hubert Filas. All Rights Reserved.
 
 
 #include "F2FCannonBullet.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/SphereComponent.h"
+#include "Freighter.h"
+#include "Engine/Engine.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AF2FCannonBullet::AF2FCannonBullet()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+ 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
+	SetRootComponent(Collision);
+
+	Collision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	Collision->SetGenerateOverlapEvents(true);
+	Collision->SetCollisionObjectType(ECC_WorldDynamic);
+	Collision->SetCollisionResponseToAllChannels(ECR_Overlap);
 
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Mesh"));
-	SetRootComponent(BulletMesh);
+	BulletMesh->SetupAttachment(Collision);
+	BulletMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
-    ProjectileMovement->UpdatedComponent = RootComponent;
+	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
+	ProjectileMovement->UpdatedComponent = Collision;
 	ProjectileMovement->ProjectileGravityScale = 0.f;
-
+	ProjectileMovement->InitialSpeed = 800.f;
 }
 
 // Called when the game starts or when spawned
@@ -24,6 +37,10 @@ void AF2FCannonBullet::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &AF2FCannonBullet::OnOverlapBegin);
+	ProjectileMovement->bShouldBounce = false;
+	ProjectileMovement->bSweepCollision = false;
 
 	FTimerHandle DieTimer;
 	GetWorld()->GetTimerManager().SetTimer(
@@ -38,7 +55,36 @@ void AF2FCannonBullet::BeginPlay()
 void AF2FCannonBullet::Kill(){
 	Destroy();
 }
+void AF2FCannonBullet::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor != Cast<AActor>(Outer) && !OtherActor->IsA(AFreighterWeapons::StaticClass())){
+		
+		GEngine->AddOnScreenDebugMessage(
+		0,
+		10.f,
+		FColor::Cyan,
+		UKismetSystemLibrary::GetDisplayName(OtherActor)
+		);
 
+		if (ImpactParticles){
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactParticles, GetActorLocation(),GetActorRotation());
+		}
+		else if (CascadeImpactParticles){
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),CascadeImpactParticles,GetActorLocation());
+		}
+
+		if (ImpactSound){
+			UGameplayStatics::PlaySoundAtLocation(
+				this,
+				ImpactSound,
+				GetActorLocation()
+			);
+		}
+		
+		Destroy();
+	}
+	
+}
 
 // Called every frame
 void AF2FCannonBullet::Tick(float DeltaTime)
