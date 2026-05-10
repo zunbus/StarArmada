@@ -59,6 +59,12 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TMap<FString, FFreighterCategory> Categories;
 
+    UPROPERTY(EditDefaultsOnly, Category="Collision")
+    FVector CollisionBounds = FVector(0.f,0.f,0.f);
+
+    UPROPERTY(EditDefaultsOnly, Category="Collision")
+    FVector Pivot = FVector(0.f,0.f,0.f);
+
     // Constructor initializes all category/variant keys
     UFreighterMeshSet();
 };

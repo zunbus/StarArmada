@@ -5,12 +5,22 @@
 #include "FreighterMeshSet.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AFreighter::AFreighter()
 {
+	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
+	SetRootComponent(Collision);
+	Collision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	Collision->SetGenerateOverlapEvents(true);
+	Collision->SetCollisionObjectType(ECC_WorldDynamic);
+	Collision->SetCollisionResponseToAllChannels(ECR_Overlap);
+
  	HullMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hull Mesh"));
-	SetRootComponent(HullMesh);
+	HullMesh->SetupAttachment(Collision);
+
 	HangarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hangar Mesh"));
 	HangarMesh->SetupAttachment(HullMesh);
 
@@ -48,7 +58,44 @@ AFreighter::AFreighter()
 	Reactor2Cover->SetupAttachment(HullMesh);
 	
 	
+	HullMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HullMesh->SetGenerateOverlapEvents(false);
 
+	HangarMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HangarMesh->SetGenerateOverlapEvents(false);
+
+	BowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BowMesh->SetGenerateOverlapEvents(false);
+
+	CargoPortsideMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CargoPortsideMesh->SetGenerateOverlapEvents(false);
+
+	CargoStarboardMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CargoStarboardMesh->SetGenerateOverlapEvents(false);
+
+	ThrustersMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ThrustersMesh->SetGenerateOverlapEvents(false);
+
+	CommStationMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CommStationMesh->SetGenerateOverlapEvents(false);
+
+	PCD->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PCD->SetGenerateOverlapEvents(false);
+
+	Reactor1->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Reactor1->SetGenerateOverlapEvents(false);
+
+	Reactor2->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Reactor2->SetGenerateOverlapEvents(false);
+
+	PCDCover->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PCDCover->SetGenerateOverlapEvents(false);
+
+	Reactor1Cover->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Reactor1Cover->SetGenerateOverlapEvents(false);
+
+	Reactor2Cover->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Reactor2Cover->SetGenerateOverlapEvents(false);
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -59,10 +106,9 @@ void AFreighter::BeginPlay()
 {
 	Super::BeginPlay();
 	if (FreighterMeshSet){
+		Collision->SetBoxExtent(FreighterMeshSet->CollisionBounds);
+		HullMesh->SetRelativeLocation(FreighterMeshSet->Pivot);
 		HullMesh->SetSkeletalMesh(FreighterMeshSet->Hull);
-		HullMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		HullMesh->SetCollisionObjectType(ECC_WorldDynamic);
-		HullMesh->SetCollisionResponseToAllChannels(ECR_Block);
 
 		switch (Hangar){
 			case EHangarType::Innovative:
@@ -228,7 +274,50 @@ void AFreighter::BeginPlay()
 void AFreighter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (!isDead){
+		if (Health <= 0.f){
+			isDead = true;
+			if (Death){
+				TArray<FName> Sockets = {"Reactor1Socket","Reactor2Socket","L-LargeHardpoint1"};
+				for (int i = 0; i<3; i++){
+					FTimerHandle TimerHandle;
+					GetWorld()->GetTimerManager().SetTimer(
+						TimerHandle,
+						[this, Sockets, i]()
+						{
+							UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),Death,HullMesh->GetSocketLocation(Sockets[i]));
+							if (DeathSound){
+								UGameplayStatics::PlaySoundAtLocation(
+									GetWorld(),
+									DeathSound,
+									GetActorLocation(),
+									1.0f,
+									FMath::FRandRange(0.5f, 1.5f)
+								);
+							}
+						},
+						.1f+i*2.f*FMath::FRandRange(0.5f, 1.5f),
+						false
+					);
+				}
+			}
+			FTimerHandle TimerHandle;
+		}
+	}
+	
+	if (Shields < MaxShields){
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(
+			TimerHandle,
+			[this, DeltaTime]()
+			{
+				Shields += 50.0f * DeltaTime;
+				Shields = FMath::Clamp(Shields, 0.f, MaxShields);
+			},
+			10.f,
+			false
+		);
+	}
 }
 
 // Called to bind functionality to input
@@ -247,4 +336,20 @@ void AFreighter::SetupWeapon(AFreighterWeapons* Weapon, USkeletalMeshComponent* 
     Weapon->SetActorScale3D(FVector(0.05f,0.05f,0.05f));
     Weapon->AddActorLocalRotation(FRotator(0.f,180.f,180.f));
 	Weapon->OwningFreighter = this;
+}
+
+float AFreighter::TakeDamage(
+    float DamageAmount,
+    FDamageEvent const& DamageEvent,
+    AController* EventInstigator,
+    AActor* DamageCauser)
+{
+    if (Shields <= 0.f){
+		Health -= DamageAmount;
+	}
+	else {
+		Shields -= DamageAmount*.8f;
+	}
+
+    return DamageAmount;
 }

@@ -56,7 +56,7 @@ void AFreighterWeapons::Fire(){
 			Mesh->GetSocketRotation("BarrelSpawn"),
 			Params
 		);
-		if (OwningFreighter){
+		if (BulletActor && OwningFreighter){
 			BulletActor->Outer=OwningFreighter;
 		}
 		
@@ -64,8 +64,10 @@ void AFreighterWeapons::Fire(){
 
 		AActor* Parent = GetAttachParentActor();
 		FVector ParentVelocity = Parent ? Parent->GetVelocity() : FVector::ZeroVector;
-
-		BulletActor->ProjectileMovement->Velocity += ParentVelocity;
+		if (BulletActor){
+			BulletActor->ProjectileMovement->Velocity += ParentVelocity;
+		}
+		
 
 		
 		if (FireSound){

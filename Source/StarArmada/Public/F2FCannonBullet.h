@@ -31,7 +31,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
     USphereComponent* Collision;
 
-    
+    UPROPERTY(EditDefaultsOnly)
+    float Damage = 0.f;
 
     UPROPERTY(EditDefaultsOnly)
     UNiagaraSystem* ImpactParticles;

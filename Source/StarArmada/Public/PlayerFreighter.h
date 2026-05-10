@@ -11,6 +11,7 @@ class UCameraComponent;
 class USplineComponent;
 class USplineMeshComponent;
 class AFreighterWeapons;
+class UInstance;
 
 /**
  * 
@@ -76,5 +77,6 @@ class STARARMADA_API APlayerFreighter : public AFreighter
 		FVector2D CurrentTurn = FVector2D(0.f, 0.f);
 		UPROPERTY(BlueprintReadOnly)
 		float CurrentThrottle = 0.f;
+		UInstance* GameInstance;
 		
 };

@@ -11,6 +11,8 @@
 class UFreighterMeshSet;
 class USkeletalMeshComponent;
 class UStaticMeshComponent;
+class UBoxComponent;
+class USoundBase;
 
 
 UENUM(BlueprintType)
@@ -99,6 +101,9 @@ protected:
     UPROPERTY(VisibleAnywhere)
     UStaticMeshComponent* Reactor2Cover;
 
+    UPROPERTY(VisibleAnywhere)
+    UBoxComponent* Collision;
+
 	void SetupWeapon(AFreighterWeapons* Weapon, USkeletalMeshComponent* InHullMesh, FName Socket);
 
 
@@ -130,13 +135,43 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Configuration|Freighter Customization")
 	EThrusterType Thrusters;
 
+    virtual float TakeDamage(
+        float DamageAmount,
+        struct FDamageEvent const& DamageEvent,
+        AController* EventInstigator,
+        AActor* DamageCauser
+    ) override;
+
+    UPROPERTY(EditAnywhere, Category="Configuration|Health", BlueprintReadOnly)
+    float MaxShields = 1000.f;
+    UPROPERTY(EditAnywhere, Category="Configuration|Health", BlueprintReadOnly)
+    float MaxHealth = 1000.f;
+
+    
+
+    UPROPERTY(EditAnywhere, Category="Configuration|Particles")
+    UParticleSystem* Death;
+    UPROPERTY(EditAnywhere, Category="Configuration")
+    USoundBase* DeathSound;
 
 public:
     virtual void Tick(float DeltaTime) override;
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+    UPROPERTY(BlueprintReadOnly)
 	TArray<AFreighterWeapons*> WeaponsLeft;
+    UPROPERTY(BlueprintReadOnly)
     TArray<AFreighterWeapons*> WeaponsRight;
+    UPROPERTY(BlueprintReadOnly)
 	AFreighterWeapons* WeaponForward;
+
+    UPROPERTY(BlueprintReadOnly)
+    float Shields = MaxShields;
+    UPROPERTY(BlueprintReadOnly)
+    float Health = MaxHealth;
+
+
+    UPROPERTY(BlueprintReadOnly)
+    bool isDead = false;
 };

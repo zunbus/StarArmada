@@ -10,6 +10,7 @@
 #include "Freighter.h"
 #include "Engine/Engine.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/DamageType.h"
 
 // Sets default values
 AF2FCannonBullet::AF2FCannonBullet()
@@ -59,12 +60,6 @@ void AF2FCannonBullet::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 {
 	if (OtherActor != Cast<AActor>(Outer) && !OtherActor->IsA(AFreighterWeapons::StaticClass())){
 		
-		GEngine->AddOnScreenDebugMessage(
-		0,
-		10.f,
-		FColor::Cyan,
-		UKismetSystemLibrary::GetDisplayName(OtherActor)
-		);
 
 		if (ImpactParticles){
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactParticles, GetActorLocation(),GetActorRotation());
@@ -81,6 +76,14 @@ void AF2FCannonBullet::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 			);
 		}
 		
+		UGameplayStatics::ApplyDamage(
+			OtherActor,
+			Damage,
+			GetInstigatorController(),
+			this,
+			UDamageType::StaticClass()
+		);
+
 		Destroy();
 	}
 	

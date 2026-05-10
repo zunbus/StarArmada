@@ -66,7 +66,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool Active = false;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, CallInEditor)
 	void Fire();
 	AFreighter* OwningFreighter;
 
