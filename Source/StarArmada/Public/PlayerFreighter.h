@@ -64,11 +64,11 @@ class STARARMADA_API APlayerFreighter : public AFreighter
 		void SetWeapons2(const FInputActionValue &Value);
 		void SetWeapons3(const FInputActionValue &Value);
 		void FireWeapons(const FInputActionValue &Value);
+		void TryAddInputMappingContext();
 
+		FTimerHandle InputMappingRetryHandle;
 		bool FreeCam = false;
 		int ActiveWeapons = 0;
-
-		
 
 	public:
 		virtual void Tick(float DeltaTime) override;

@@ -174,4 +174,6 @@ public:
 
     UPROPERTY(BlueprintReadOnly)
     bool isDead = false;
+
+    bool gotHit = false;
 };

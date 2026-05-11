@@ -305,14 +305,16 @@ void AFreighter::Tick(float DeltaTime)
 		}
 	}
 	
-	if (Shields < MaxShields){
+	if (Shields < MaxShields && !gotHit && !isDead){
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(
 			TimerHandle,
 			[this, DeltaTime]()
 			{
-				Shields += 50.0f * DeltaTime;
-				Shields = FMath::Clamp(Shields, 0.f, MaxShields);
+				if(!gotHit){
+					Shields += 50.0f * DeltaTime;
+					Shields = FMath::Clamp(Shields, 0.f, MaxShields);
+				}
 			},
 			10.f,
 			false
@@ -344,12 +346,25 @@ float AFreighter::TakeDamage(
     AController* EventInstigator,
     AActor* DamageCauser)
 {
+	
     if (Shields <= 0.f){
 		Health -= DamageAmount;
 	}
 	else {
 		Shields -= DamageAmount*.8f;
+		gotHit = true;
 	}
+
+	FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(
+		TimerHandle,
+		[this]()
+		{
+			gotHit = false;
+		},
+		10.f,
+		false
+	);
 
     return DamageAmount;
 }
