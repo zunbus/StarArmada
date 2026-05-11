@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// © Hubert Filas 2026. All Rights Reserved.
 
 
 #include "FreighterWeapons.h"
