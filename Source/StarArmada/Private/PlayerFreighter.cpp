@@ -269,7 +269,7 @@ void APlayerFreighter::Tick(float DeltaTime)
     }
    
     if (GetVelocity().Size() >= 10.f && !isDead){
-        AddActorLocalRotation(FRotator(CurrentTurn.Y*-0.001f*(CurrentThrottle/100.f), CurrentTurn.X*0.001f*(CurrentThrottle/100.f), 0.0f));
+        AddActorLocalRotation(FRotator(CurrentTurn.Y*-0.0001f*(CurrentThrottle/100.f), CurrentTurn.X*0.0001f*(CurrentThrottle/100.f), 0.0f));
     }
 }
 
