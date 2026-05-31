@@ -17,6 +17,8 @@ class STARARMADA_API UInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
+	virtual void Init() override;
+
 	public:
 		UPROPERTY(EditDefaultsOnly, Category="Configuration|Freighter Customization", BlueprintReadWrite)
 		TSubclassOf<AFreighterWeapons> WeaponsPortsideInst;
